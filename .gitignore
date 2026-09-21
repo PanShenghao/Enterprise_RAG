@@ -1,0 +1,38 @@
+# ===== Python =====
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+build/
+dist/
+.venv/
+venv/
+env/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# 环境配置（含密钥，不入库）
+backend/.env
+
+# 本地落盘的上传文件
+backend/storage/
+
+# Milvus 本地数据卷（运行时数据，不入库）
+docker/milvus/volumes/
+
+# ===== 前端 =====
+node_modules/
+front/rag_front/dist/
+*.local
+*.tsbuildinfo
+
+# ===== IDE / 编辑器 =====
+.idea/
+.vscode/
+*.iml
+*.swp
+
+# ===== 系统 =====
+.DS_Store
+Thumbs.db
