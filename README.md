@@ -11,6 +11,16 @@
 - 检索调试台
 - Agent 流式对话与来源溯源展示
 
+## 界面截图
+
+| 总览看板 | 上传入库 | 文档管理 |
+|---|---|---|
+| ![总览看板](docs/screenshots/dashboard.png) | ![上传入库](docs/screenshots/upload.png) | ![文档管理](docs/screenshots/documents.png) |
+
+| Chunk 管理 | 检索调试 | Agent 对话 |
+|---|---|---|
+| ![Chunk 管理](docs/screenshots/chunks.png) | ![检索调试](docs/screenshots/retrieval.png) | ![Agent 对话](docs/screenshots/chat.png) |
+
 ---
 
 ## 1. 项目目标
