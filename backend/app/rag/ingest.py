@@ -227,12 +227,33 @@ def ingest_loaded_document(
         vector_store = get_vector_store()
         texts = [chunk.content for chunk in chunk_models]
         metadatas: list[dict] = []
+        # Milvus 集合 schema 在首次入库时即固定，后续所有文档必须产出「同构」元数据，
+        # 否则不同解析器（md/pdf/docx）缺字段或类型不一致会导致
+        # 「unrecognized dtype / missed field」错误。
+        # 字段集与 README「8.3 当前知识库集合中的字段形态」对齐：
+        # 文本字段统一 str（缺省 ''），page_number 统一 int（缺省 0）。
+        # 注意：knowledge_base / chunk_index / section_index 属于 PostgreSQL 主数据，
+        # 不进 Milvus（Milvus 只是检索副本）。
+        def _norm(value: object, *, as_int: bool = False) -> str | int:
+            if as_int:
+                return int(value) if value is not None else 0
+            return str(value) if value is not None else ''
+
         for chunk in chunk_models:
-            metadata = dict(chunk.metadata_json)
-            metadata['chunk_id'] = chunk.id
-            # Milvus 无法为 None 值推断字段类型（文本入库时 source_path/page_number 为 None），
-            # 统一转成空字符串，避免建集合时报 unrecognized dtype。
-            metadatas.append({k: (v if v is not None else '') for k, v in metadata.items()})
+            m = dict(chunk.metadata_json)
+            m['chunk_id'] = chunk.id
+            metadatas.append({
+                'chunk_id': _norm(m.get('chunk_id')),
+                'document_id': _norm(m.get('document_id')),
+                'filename': _norm(m.get('filename')),
+                'file_type': _norm(m.get('file_type')),
+                'splitter_name': _norm(m.get('splitter_name')),
+                'parser_name': _norm(m.get('parser_name')),
+                'section_type': _norm(m.get('section_type')),
+                'section_title': _norm(m.get('section_title')),
+                'page_number': _norm(m.get('page_number'), as_int=True),
+                'source_path': _norm(m.get('source_path')),
+            })
 
         vector_ids = vector_store.add_texts(texts=texts, metadatas=metadatas)
         for chunk, vector_id in zip(chunk_models, vector_ids, strict=False):
