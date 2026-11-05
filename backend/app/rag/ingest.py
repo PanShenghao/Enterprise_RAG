@@ -230,7 +230,9 @@ def ingest_loaded_document(
         for chunk in chunk_models:
             metadata = dict(chunk.metadata_json)
             metadata['chunk_id'] = chunk.id
-            metadatas.append(metadata)
+            # Milvus 无法为 None 值推断字段类型（文本入库时 source_path/page_number 为 None），
+            # 统一转成空字符串，避免建集合时报 unrecognized dtype。
+            metadatas.append({k: (v if v is not None else '') for k, v in metadata.items()})
 
         vector_ids = vector_store.add_texts(texts=texts, metadatas=metadatas)
         for chunk, vector_id in zip(chunk_models, vector_ids, strict=False):
