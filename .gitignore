@@ -36,3 +36,8 @@ front/rag_front/dist/
 # ===== 系统 =====
 .DS_Store
 Thumbs.db
+
+# ===== 截图（演示/文档截图不入库，仅忽略仓库根目录误存）=====
+/*.png
+/*.jpg
+/*.jpeg
